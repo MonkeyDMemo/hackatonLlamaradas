@@ -152,13 +152,13 @@ def ejecutar_modelo_segun_tarea(imagen_rgb, task_selected):
             sin_llamarada = next((p for p in predictions if 'sinLlamaradaSolar' in p['class']), None)
             
             if con_llamarada and con_llamarada['confidence'] > 0.6:
-                analysis_message = f"🔥 Llamarada solar ACTIVA detectada con {con_llamarada['confidence']:.1%} de confianza"
+                #analysis_message = f"🔥 Llamarada solar ACTIVA detectada con {con_llamarada['confidence']:.1%} de confianza"
                 alert_level = "danger"
             elif sin_llamarada and sin_llamarada['confidence'] > 0.6:
-                analysis_message = f"✅ Sin llamaradas activas ({sin_llamarada['confidence']:.1%} de confianza)"
+                #analysis_message = f"✅ Sin llamaradas activas ({sin_llamarada['confidence']:.1%} de confianza)"
                 alert_level = "normal"
             else:
-                analysis_message = "⚠️ Resultado incierto, revisar manualmente"
+                #analysis_message = "⚠️ Resultado incierto, revisar manualmente"
                 alert_level = "warning"
                 
         else:  # task_selected == "2" - Probabilidad
@@ -176,7 +176,7 @@ def ejecutar_modelo_segun_tarea(imagen_rgb, task_selected):
                 # Usar la predicción más alta
                 if predictions:
                     top_pred = max(predictions, key=lambda x: x['confidence'])
-                    analysis_message = f"📊 Predicción: {top_pred['class']} ({top_pred['confidence']:.1%})"
+                    #analysis_message = f"📊 Predicción: {top_pred['class']} ({top_pred['confidence']:.1%})"
                     alert_level = "warning" if top_pred['confidence'] < 0.6 else "normal"
         
         print(f"\n📋 Análisis: {analysis_message}")

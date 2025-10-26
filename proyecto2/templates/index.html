@@ -79,8 +79,65 @@
             display: none;
         }
 
-        .wavelength-selector {
+        /* Selector de Tarea */
+        .task-selector {
             margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-selector h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .task-options {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .task-option {
+            flex: 1;
+            min-width: 250px;
+            padding: 20px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .task-option:hover {
+            background: #f0f4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .task-option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #764ba2;
+        }
+
+        .task-option .task-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .task-option .task-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .wavelength-selector {
+            margin: 20px 0;
             display: flex;
             gap: 20px;
             justify-content: center;
@@ -244,8 +301,7 @@
             display: none;
         }
 
-        /* Estilos para el análisis detallado */
-        .analysis-details {
+        .analysis-box {
             background: white;
             border-radius: 15px;
             padding: 20px;
@@ -253,68 +309,54 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .analysis-details h3 {
+        .analysis-box h3 {
             color: #764ba2;
             margin-bottom: 15px;
             font-size: 1.3em;
         }
 
-        .model-results {
-            margin: 15px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
+        .alert-normal {
+            background: #00d68f20;
+            border-left: 4px solid #00d68f;
+            color: #00b074;
         }
 
-        .model-title {
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 1.1em;
+        .alert-warning {
+            background: #ffa50020;
+            border-left: 4px solid #ffa500;
+            color: #ff8c00;
         }
 
-        .decision-box {
-            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-        }
-
-        .decision-box strong {
-            color: #333;
-        }
-
-        .alert-box {
+        .alert-danger {
             background: #ff475720;
             border-left: 4px solid #ff4757;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-            font-weight: bold;
             color: #ff4757;
-            animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.8; }
-            100% { opacity: 1; }
+        .alert-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
         }
 
-        .model-badge {
+        .task-badge {
             display: inline-block;
-            padding: 3px 8px;
+            padding: 5px 10px;
             border-radius: 5px;
-            font-size: 0.8em;
-            margin-left: 5px;
+            font-size: 0.9em;
             background: #667eea;
             color: white;
+            margin-left: 10px;
         }
 
         @media (max-width: 768px) {
             .results-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .task-options {
+                flex-direction: column;
             }
             
             .header h1 {
@@ -324,14 +366,6 @@
             .wavelength-selector {
                 flex-direction: column;
             }
-
-            .container {
-                border-radius: 10px;
-            }
-
-            .upload-section, .results-section {
-                padding: 20px;
-            }
         }
     </style>
 </head>
@@ -339,10 +373,31 @@
     <div class="container">
         <div class="header">
             <h1>🔥 Detector de Llamaradas Solares</h1>
-            <p>Procesamiento con resta de fondo y análisis con doble modelo de IA</p>
+            <p>Análisis con IA - Selecciona la tarea a ejecutar</p>
         </div>
 
         <div class="upload-section">
+            <!-- Selector de Tarea -->
+            <div class="task-selector">
+                <h3>📋 Selecciona la Tarea de Análisis</h3>
+                <div class="task-options">
+                    <div class="task-option selected" data-task="1">
+                        <div class="task-title">📊 Task 1</div>
+                        <div class="task-description">
+                            <strong>Clasificación de Llamaradas</strong><br>
+                            Detecta si hay llamaradas solares activas en la imagen
+                        </div>
+                    </div>
+                    <div class="task-option" data-task="2">
+                        <div class="task-title">🔮 Task 2</div>
+                        <div class="task-description">
+                            <strong>Probabilidad de Llamaradas</strong><br>
+                            Predice la probabilidad de llamaradas futuras
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="upload-zone" id="uploadZone">
                 <div class="upload-icon">📁</div>
                 <h2>Arrastra tu imagen aquí</h2>
@@ -405,9 +460,9 @@
                 <div id="predictionsList"></div>
             </div>
 
-            <div class="analysis-details" id="analysisDetails" style="display: none;">
-                <h3>📊 Análisis Detallado con Doble Modelo</h3>
-                <div class="analysis-content" id="analysisContent">
+            <div class="analysis-box" id="analysisBox" style="display: none;">
+                <h3>📊 Análisis de Resultados</h3>
+                <div id="analysisContent">
                     <!-- Se llena dinámicamente -->
                 </div>
             </div>
@@ -425,6 +480,18 @@
         
         let selectedFile = null;
         let selectedWavelength = '131';
+        let selectedTask = '1';
+
+        // Selector de tarea
+        document.querySelectorAll('.task-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.task-option').forEach(o => 
+                    o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedTask = option.dataset.task;
+                console.log('Tarea seleccionada:', selectedTask);
+            });
+        });
 
         // Manejo de carga de archivos
         uploadZone.addEventListener('click', () => fileInput.click());
@@ -463,14 +530,12 @@
             
             if (filename.includes('_0131') || filename.includes('131')) {
                 detectedType = '131 Å';
-                // Auto-seleccionar el botón correcto
                 document.querySelectorAll('.wavelength-option').forEach(o => 
                     o.classList.remove('selected'));
                 document.querySelector('[data-wavelength="131"]').classList.add('selected');
                 selectedWavelength = '131';
             } else if (filename.includes('_0193') || filename.includes('193')) {
                 detectedType = '193 Å';
-                // Auto-seleccionar el botón correcto
                 document.querySelectorAll('.wavelength-option').forEach(o => 
                     o.classList.remove('selected'));
                 document.querySelector('[data-wavelength="193"]').classList.add('selected');
@@ -501,31 +566,27 @@
         processBtn.addEventListener('click', async () => {
             if (!selectedFile) return;
             
-            // Detectar tipo de imagen por nombre
             const filename = selectedFile.name.toLowerCase();
-            let detectedWavelength = selectedWavelength; // usar selección manual por defecto
+            let detectedWavelength = selectedWavelength;
             
             if (filename.includes('_0131') || filename.includes('131')) {
                 detectedWavelength = '131';
-                console.log('Detectado: Imagen 131 Å');
             } else if (filename.includes('_0193') || filename.includes('193')) {
                 detectedWavelength = '193';
-                console.log('Detectado: Imagen 193 Å');
             }
             
             const formData = new FormData();
             formData.append('file', selectedFile);
             formData.append('wavelength', detectedWavelength);
+            formData.append('task', selectedTask);
             
             // Mostrar loading con información
+            const taskName = selectedTask === '1' ? 'Clasificación' : 'Probabilidad';
             loading.innerHTML = `
                 <div class="spinner"></div>
                 <p>Procesando imagen...</p>
                 <p style="opacity: 0.7; font-size: 0.9em;">
-                    Tipo detectado: ${detectedWavelength} Å
-                </p>
-                <p style="opacity: 0.5; font-size: 0.8em; margin-top: 10px;">
-                    Ejecutando análisis con doble modelo...
+                    Tipo: ${detectedWavelength} Å | Task ${selectedTask}: ${taskName}
                 </p>
             `;
             loading.style.display = 'block';
@@ -547,7 +608,7 @@
                     successMsg.innerHTML = `
                         ✅ Imagen procesada exitosamente<br>
                         <small>Longitud de onda: ${data.wavelength} Å | 
-                        Modelo: ${data.analisis_completo ? data.analisis_completo.modelo_usado : 'clasificación'}</small>
+                        Task ${data.task}: ${data.analysis.task_name}</small>
                     `;
                     successMsg.style.display = 'block';
                 } else {
@@ -574,7 +635,7 @@
             document.getElementById('annotatedImage').innerHTML = 
                 `<img src="${data.annotated}" alt="Anotada">`;
             
-            // Mostrar predicciones principales
+            // Mostrar predicciones
             const predictionsList = document.getElementById('predictionsList');
             if (data.predictions && data.predictions.length > 0) {
                 predictionsList.innerHTML = data.predictions
@@ -583,7 +644,7 @@
                         <div class="prediction-item">
                             <span class="prediction-class">
                                 ${pred.class}
-                                ${pred.modelo_usado ? `<span class="model-badge">${pred.modelo_usado}</span>` : ''}
+                                <span class="task-badge">Task ${pred.task}</span>
                             </span>
                             <span class="prediction-confidence">
                                 ${(pred.confidence * 100).toFixed(1)}%
@@ -595,47 +656,23 @@
                     '<p style="text-align: center; opacity: 0.7;">No se detectaron llamaradas</p>';
             }
             
-            // Mostrar análisis detallado si está disponible
-            if (data.analisis_completo) {
-                const analysisDiv = document.getElementById('analysisDetails');
+            // Mostrar análisis
+            if (data.analysis) {
+                const analysisBox = document.getElementById('analysisBox');
                 const analysisContent = document.getElementById('analysisContent');
                 
-                analysisDiv.style.display = 'block';
+                analysisBox.style.display = 'block';
                 
-                let alertHtml = '';
-                if (data.analisis_completo.razon_decision.includes('Alta probabilidad')) {
-                    alertHtml = `
-                        <div class="alert-box">
-                            ⚠️ ALERTA: Se detecta alta probabilidad de llamarada futura
-                        </div>
-                    `;
-                }
+                const alertClass = `alert-${data.analysis.alert_level}`;
                 
                 analysisContent.innerHTML = `
-                    ${alertHtml}
-                    <div class="decision-box">
-                        <strong>🎯 Modelo utilizado:</strong> ${data.analisis_completo.modelo_usado}<br>
-                        <strong>📝 Razón de la decisión:</strong> ${data.analisis_completo.razon_decision}
+                    <div class="alert-message ${alertClass}">
+                        ${data.analysis.analysis_message}
                     </div>
-                    
-                    <div class="model-results">
-                        <div class="model-title">📊 Modelo de Clasificación (v5):</div>
-                        ${data.analisis_completo.resultados_clasificacion.length > 0 ? 
-                            data.analisis_completo.resultados_clasificacion.map(p => 
-                                `• ${p.class}: <strong>${(p.confidence * 100).toFixed(1)}%</strong>`
-                            ).join('<br>') : 
-                            '<span style="opacity: 0.6;">Sin predicciones</span>'
-                        }
-                    </div>
-                    
-                    <div class="model-results">
-                        <div class="model-title">🔮 Modelo de Probabilidad (v6):</div>
-                        ${data.analisis_completo.resultados_probabilidad.length > 0 ? 
-                            data.analisis_completo.resultados_probabilidad.map(p => 
-                                `• ${p.class}: <strong>${(p.confidence * 100).toFixed(1)}%</strong>`
-                            ).join('<br>') : 
-                            '<span style="opacity: 0.6;">Sin predicciones</span>'
-                        }
+                    <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <strong>📋 Tarea ejecutada:</strong> Task ${data.analysis.task} - ${data.analysis.task_name}<br>
+                        <strong>📊 Modelo usado:</strong> ${data.analysis.model_used}<br>
+                        <strong>📝 Descripción:</strong> ${data.analysis.task_description}
                     </div>
                 `;
             }
