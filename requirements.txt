@@ -1,0 +1,9 @@
+Flask==2.3.3
+flask-cors==4.0.0
+opencv-python==4.8.1.78
+numpy==1.24.3
+Pillow==10.0.0
+inference==0.9.17
+roboflow==1.1.16
+Werkzeug==2.3.7
+gunicorn==21.2.0
