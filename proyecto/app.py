@@ -25,7 +25,7 @@ os.makedirs(app.config['RESULTS_FOLDER'], exist_ok=True)
 
 # Configuración Roboflow
 API_KEY = "cygTL33SntK8etDjvyVD"
-MODEL_ID = "llamaradas-v2-h7wcc/3"
+MODEL_ID = "llamaradas-v2-h7wcc/5"
 
 # Rutas de imágenes de fondo (ajusta estas rutas)
 FONDO_131_PATH = r"C:\Users\resendizjg\Downloads\quite_average-131.tif"
