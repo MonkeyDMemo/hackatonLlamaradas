@@ -18,7 +18,8 @@ data = tifffile.imread(fpath)
 print(type(data), data.shape, data.dtype)
 
 # Fijamos el mapa de color
-cmap_name = 'Blues'
+#cmap_name = 'Blues'
+cmap_name = 'gray'
 cmap = plt.colormaps[cmap_name].copy()
 cmap.set_bad('black')
 

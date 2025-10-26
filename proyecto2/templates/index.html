@@ -372,27 +372,27 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔥 Detector de Llamaradas Solares</h1>
+            <h1>☀️ Detector de Ráfagas Solares</h1>
             <p>Análisis con IA - Selecciona la tarea a ejecutar</p>
         </div>
 
         <div class="upload-section">
             <!-- Selector de Tarea -->
             <div class="task-selector">
-                <h3>📋 Selecciona la Tarea de Análisis</h3>
+                <!--<h3>Selecciona la Tarea de Análisis</h3>-->
                 <div class="task-options">
                     <div class="task-option selected" data-task="1">
-                        <div class="task-title">📊 Task 1</div>
+                        <div class="task-title">Task 1</div>
                         <div class="task-description">
-                            <strong>Clasificación de Llamaradas</strong><br>
-                            Detecta si hay llamaradas solares activas en la imagen
+                            <strong>Clasificación de Ráfagas</strong><br>
+                            Identifica la presencia de una ráfaga en una imagen del Sol
                         </div>
                     </div>
                     <div class="task-option" data-task="2">
-                        <div class="task-title">🔮 Task 2</div>
+                        <div class="task-title">Task 2</div>
                         <div class="task-description">
-                            <strong>Probabilidad de Llamaradas</strong><br>
-                            Predice la probabilidad de llamaradas futuras
+                            <strong>Predicción de Ráfagas</strong><br>
+                            Predice si ocurrirá una ráfaga a partir de una imagen del Sol
                         </div>
                     </div>
                 </div>
@@ -417,7 +417,7 @@
                 </div>
             </div>
 
-            <button class="btn" id="processBtn" disabled>🚀 Procesar Imagen</button>
+            <button class="btn" id="processBtn" disabled>Procesar Imagen</button>
 
             <div class="error" id="errorMsg"></div>
             <div class="success" id="successMsg"></div>
@@ -429,26 +429,26 @@
 
         <div class="results-section" id="resultsSection">
             <h2 style="text-align: center; color: #667eea; margin-bottom: 20px;">
-                Resultados del Análisis
+                Resultados
             </h2>
 
             <div class="results-grid">
                 <div class="image-card">
-                    <div class="image-card-header">📸 Imagen Original</div>
+                    <div class="image-card-header">Imagen Original</div>
                     <div class="image-container" id="originalImage">
                         <p>Cargando...</p>
                     </div>
                 </div>
 
                 <div class="image-card">
-                    <div class="image-card-header">🔬 Resta de Fondo</div>
+                    <div class="image-card-header">Eliminación de Flat</div>
                     <div class="image-container" id="processedImage">
                         <p>Cargando...</p>
                     </div>
                 </div>
 
                 <div class="image-card">
-                    <div class="image-card-header">🤖 Detección IA</div>
+                    <div class="image-card-header">Inferencia</div>
                     <div class="image-container" id="annotatedImage">
                         <p>Cargando...</p>
                     </div>
@@ -456,12 +456,12 @@
             </div>
 
             <div class="predictions" id="predictionsContainer">
-                <h3>🎯 Predicciones del Modelo</h3>
+                <h3>Predicciones del Modelo</h3>
                 <div id="predictionsList"></div>
             </div>
 
             <div class="analysis-box" id="analysisBox" style="display: none;">
-                <h3>📊 Análisis de Resultados</h3>
+                <h3>Análisis de Resultados</h3>
                 <div id="analysisContent">
                     <!-- Se llena dinámicamente -->
                 </div>
