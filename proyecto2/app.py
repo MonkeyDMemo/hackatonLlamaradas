@@ -30,8 +30,12 @@ MODEL_TASK1 = "llamaradas-v2-h7wcc/5"  # Task 1: Clasificación
 MODEL_TASK2 = "llamaradas-v2-h7wcc/6"  # Task 2: Probabilidad
 
 # Rutas de imágenes de fondo (ajusta estas rutas)
+# Ajustar las rutas a una ruta relativa
 FONDO_131_PATH = r"C:\Users\resendizjg\Downloads\quite_average-131.tif"
 FONDO_193_PATH = r"C:\Users\resendizjg\Downloads\quite_average-193.tif"
+# Rutas de imágenes de fondo (ajusta estas rutas)
+#FONDO_131_PATH = "/var/www/hackatonLlamaradas/proyecto2/backgrounds/quite_average-131.tif"
+#FONDO_193_PATH = "/var/www/hackatonLlamaradas/proyecto2/backgrounds/quite_average-193.tif"
 
 # Cargar fondos al iniciar
 print("Cargando imágenes de fondo...")
@@ -61,6 +65,7 @@ def detectar_tipo_imagen(filename):
         return '193'
     return None
 
+#Esta normalizando la escala de colores del tiff a png. No debería dejarse 
 def convertir_tiff_a_png(imagen_tiff):
     """
     Convierte una imagen TIFF a formato PNG escalando para mejor visualización
