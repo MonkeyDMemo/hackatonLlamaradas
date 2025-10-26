@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detector de Llamaradas Solares</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .upload-section {
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .upload-zone {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-zone:hover {
+            background: #f0f4ff;
+            border-color: #764ba2;
+        }
+
+        .upload-zone.dragover {
+            background: #e8ecff;
+            border-color: #764ba2;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .wavelength-selector {
+            margin: 30px 0;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .wavelength-option {
+            padding: 15px 30px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .wavelength-option:hover {
+            background: #f0f4ff;
+        }
+
+        .wavelength-option.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            padding: 40px;
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .image-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .image-container {
+            position: relative;
+            background: #f8f9fa;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .predictions {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .predictions h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .prediction-class {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .prediction-confidence {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ff4757;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success {
+            background: #00d68f;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        /* Estilos para el análisis detallado */
+        .analysis-details {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .analysis-details h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .model-results {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .model-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .decision-box {
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .decision-box strong {
+            color: #333;
+        }
+
+        .alert-box {
+            background: #ff475720;
+            border-left: 4px solid #ff4757;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #ff4757;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .model-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            margin-left: 5px;
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .wavelength-selector {
+                flex-direction: column;
+            }
+
+            .container {
+                border-radius: 10px;
+            }
+
+            .upload-section, .results-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 Detector de Llamaradas Solares</h1>
+            <p>Procesamiento con resta de fondo y análisis con doble modelo de IA</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-icon">📁</div>
+                <h2>Arrastra tu imagen aquí</h2>
+                <p>o haz clic para seleccionar</p>
+                <p style="margin-top: 10px; opacity: 0.7; font-size: 0.9em;">
+                    Formatos aceptados: TIFF, TIF, PNG, JPG
+                </p>
+                <input type="file" id="fileInput" class="file-input" accept="image/*,.tif,.tiff">
+            </div>
+
+            <div class="wavelength-selector">
+                <div class="wavelength-option selected" data-wavelength="131">
+                    ☀️ 131 Å
+                </div>
+                <div class="wavelength-option" data-wavelength="193">
+                    🌟 193 Å
+                </div>
+            </div>
+
+            <button class="btn" id="processBtn" disabled>🚀 Procesar Imagen</button>
+
+            <div class="error" id="errorMsg"></div>
+            <div class="success" id="successMsg"></div>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Procesando imagen...</p>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <h2 style="text-align: center; color: #667eea; margin-bottom: 20px;">
+                Resultados del Análisis
+            </h2>
+
+            <div class="results-grid">
+                <div class="image-card">
+                    <div class="image-card-header">📸 Imagen Original</div>
+                    <div class="image-container" id="originalImage">
+                        <p>Cargando...</p>
+                    </div>
+                </div>
+
+                <div class="image-card">
+                    <div class="image-card-header">🔬 Resta de Fondo</div>
+                    <div class="image-container" id="processedImage">
+                        <p>Cargando...</p>
+                    </div>
+                </div>
+
+                <div class="image-card">
+                    <div class="image-card-header">🤖 Detección IA</div>
+                    <div class="image-container" id="annotatedImage">
+                        <p>Cargando...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="predictions" id="predictionsContainer">
+                <h3>🎯 Predicciones del Modelo</h3>
+                <div id="predictionsList"></div>
+            </div>
+
+            <div class="analysis-details" id="analysisDetails" style="display: none;">
+                <h3>📊 Análisis Detallado con Doble Modelo</h3>
+                <div class="analysis-content" id="analysisContent">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const processBtn = document.getElementById('processBtn');
+        const loading = document.getElementById('loading');
+        const errorMsg = document.getElementById('errorMsg');
+        const successMsg = document.getElementById('successMsg');
+        const resultsSection = document.getElementById('resultsSection');
+        
+        let selectedFile = null;
+        let selectedWavelength = '131';
+
+        // Manejo de carga de archivos
+        uploadZone.addEventListener('click', () => fileInput.click());
+        
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+        
+        function handleFile(file) {
+            selectedFile = file;
+            
+            // Detectar tipo por nombre
+            const filename = file.name.toLowerCase();
+            let detectedType = 'No detectado';
+            
+            if (filename.includes('_0131') || filename.includes('131')) {
+                detectedType = '131 Å';
+                // Auto-seleccionar el botón correcto
+                document.querySelectorAll('.wavelength-option').forEach(o => 
+                    o.classList.remove('selected'));
+                document.querySelector('[data-wavelength="131"]').classList.add('selected');
+                selectedWavelength = '131';
+            } else if (filename.includes('_0193') || filename.includes('193')) {
+                detectedType = '193 Å';
+                // Auto-seleccionar el botón correcto
+                document.querySelectorAll('.wavelength-option').forEach(o => 
+                    o.classList.remove('selected'));
+                document.querySelector('[data-wavelength="193"]').classList.add('selected');
+                selectedWavelength = '193';
+            }
+            
+            uploadZone.innerHTML = `
+                <div class="upload-icon">✅</div>
+                <h2>${file.name}</h2>
+                <p>Tamaño: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                <p style="color: #667eea; font-weight: bold;">Tipo detectado: ${detectedType}</p>
+                <p style="margin-top: 10px; opacity: 0.7;">Clic para cambiar archivo</p>
+            `;
+            processBtn.disabled = false;
+        }
+        
+        // Selector de longitud de onda
+        document.querySelectorAll('.wavelength-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.wavelength-option').forEach(o => 
+                    o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedWavelength = option.dataset.wavelength;
+            });
+        });
+        
+        // Procesar imagen
+        processBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+            
+            // Detectar tipo de imagen por nombre
+            const filename = selectedFile.name.toLowerCase();
+            let detectedWavelength = selectedWavelength; // usar selección manual por defecto
+            
+            if (filename.includes('_0131') || filename.includes('131')) {
+                detectedWavelength = '131';
+                console.log('Detectado: Imagen 131 Å');
+            } else if (filename.includes('_0193') || filename.includes('193')) {
+                detectedWavelength = '193';
+                console.log('Detectado: Imagen 193 Å');
+            }
+            
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('wavelength', detectedWavelength);
+            
+            // Mostrar loading con información
+            loading.innerHTML = `
+                <div class="spinner"></div>
+                <p>Procesando imagen...</p>
+                <p style="opacity: 0.7; font-size: 0.9em;">
+                    Tipo detectado: ${detectedWavelength} Å
+                </p>
+                <p style="opacity: 0.5; font-size: 0.8em; margin-top: 10px;">
+                    Ejecutando análisis con doble modelo...
+                </p>
+            `;
+            loading.style.display = 'block';
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            resultsSection.style.display = 'none';
+            processBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResults(data);
+                    successMsg.innerHTML = `
+                        ✅ Imagen procesada exitosamente<br>
+                        <small>Longitud de onda: ${data.wavelength} Å | 
+                        Modelo: ${data.analisis_completo ? data.analisis_completo.modelo_usado : 'clasificación'}</small>
+                    `;
+                    successMsg.style.display = 'block';
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                errorMsg.textContent = `❌ Error: ${error.message}`;
+                errorMsg.style.display = 'block';
+                console.error('Error:', error);
+            } finally {
+                loading.style.display = 'none';
+                processBtn.disabled = false;
+            }
+        });
+        
+        function showResults(data) {
+            resultsSection.style.display = 'block';
+            
+            // Mostrar imágenes
+            document.getElementById('originalImage').innerHTML = 
+                `<img src="${data.original}" alt="Original">`;
+            document.getElementById('processedImage').innerHTML = 
+                `<img src="${data.processed}" alt="Procesada">`;
+            document.getElementById('annotatedImage').innerHTML = 
+                `<img src="${data.annotated}" alt="Anotada">`;
+            
+            // Mostrar predicciones principales
+            const predictionsList = document.getElementById('predictionsList');
+            if (data.predictions && data.predictions.length > 0) {
+                predictionsList.innerHTML = data.predictions
+                    .sort((a, b) => b.confidence - a.confidence)
+                    .map(pred => `
+                        <div class="prediction-item">
+                            <span class="prediction-class">
+                                ${pred.class}
+                                ${pred.modelo_usado ? `<span class="model-badge">${pred.modelo_usado}</span>` : ''}
+                            </span>
+                            <span class="prediction-confidence">
+                                ${(pred.confidence * 100).toFixed(1)}%
+                            </span>
+                        </div>
+                    `).join('');
+            } else {
+                predictionsList.innerHTML = 
+                    '<p style="text-align: center; opacity: 0.7;">No se detectaron llamaradas</p>';
+            }
+            
+            // Mostrar análisis detallado si está disponible
+            if (data.analisis_completo) {
+                const analysisDiv = document.getElementById('analysisDetails');
+                const analysisContent = document.getElementById('analysisContent');
+                
+                analysisDiv.style.display = 'block';
+                
+                let alertHtml = '';
+                if (data.analisis_completo.razon_decision.includes('Alta probabilidad')) {
+                    alertHtml = `
+                        <div class="alert-box">
+                            ⚠️ ALERTA: Se detecta alta probabilidad de llamarada futura
+                        </div>
+                    `;
+                }
+                
+                analysisContent.innerHTML = `
+                    ${alertHtml}
+                    <div class="decision-box">
+                        <strong>🎯 Modelo utilizado:</strong> ${data.analisis_completo.modelo_usado}<br>
+                        <strong>📝 Razón de la decisión:</strong> ${data.analisis_completo.razon_decision}
+                    </div>
+                    
+                    <div class="model-results">
+                        <div class="model-title">📊 Modelo de Clasificación (v5):</div>
+                        ${data.analisis_completo.resultados_clasificacion.length > 0 ? 
+                            data.analisis_completo.resultados_clasificacion.map(p => 
+                                `• ${p.class}: <strong>${(p.confidence * 100).toFixed(1)}%</strong>`
+                            ).join('<br>') : 
+                            '<span style="opacity: 0.6;">Sin predicciones</span>'
+                        }
+                    </div>
+                    
+                    <div class="model-results">
+                        <div class="model-title">🔮 Modelo de Probabilidad (v6):</div>
+                        ${data.analisis_completo.resultados_probabilidad.length > 0 ? 
+                            data.analisis_completo.resultados_probabilidad.map(p => 
+                                `• ${p.class}: <strong>${(p.confidence * 100).toFixed(1)}%</strong>`
+                            ).join('<br>') : 
+                            '<span style="opacity: 0.6;">Sin predicciones</span>'
+                        }
+                    </div>
+                `;
+            }
+            
+            // Scroll suave hacia resultados
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Verificar estado de imágenes de fondo al cargar
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/check_backgrounds');
+                const data = await response.json();
+                console.log('Estado de fondos:', data);
+                
+                if (!data.fondo_131.loaded || !data.fondo_193.loaded) {
+                    console.warn('⚠️ Algunas imágenes de fondo no están cargadas');
+                    
+                    let missingBackgrounds = [];
+                    if (!data.fondo_131.loaded) missingBackgrounds.push('131 Å');
+                    if (!data.fondo_193.loaded) missingBackgrounds.push('193 Å');
+                    
+                    errorMsg.innerHTML = `
+                        ⚠️ Advertencia: Imágenes de fondo no cargadas: ${missingBackgrounds.join(', ')}<br>
+                        <small>Verifica las rutas en app.py</small>
+                    `;
+                    errorMsg.style.background = '#ff9f43';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error verificando fondos:', error);
+            }
+        });
+    </script>
+</body>
+</html>
